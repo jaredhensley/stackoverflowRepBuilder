@@ -49,34 +49,20 @@ var showQuestion = function(question) {
   return result;
 };
 
-var showTopPosts = function(question) {
+var showTopPosts = function(item) {
 
-  // clone our result template code
-  var result = $('.templates .question').clone();
+ var result = $('.answerer .question').clone();
 
-  // Set the question properties in result
-  var questionElem = result.find('.question-text a');
-  questionElem.attr('href', question.link);
-  questionElem.text(question.title);
+ var asker = result.find('.asker');
 
-  // set the date asked property in result
-  var asked = result.find('.asked-date');
-  var date = new Date(1000 * question.creation_date);
-  asked.text(date.toString());
-
-  // set the #views for question property in result
-  var viewed = result.find('.viewed');
-  viewed.text(question.view_count);
-
-  // set some properties related to asker
-  var asker = result.find('.asker');
-  asker.html('<p>Name: <a target="_blank" href=http://stackoverflow.com/users/' + question.owner.user_id + ' >' +
-    question.owner.display_name +
+  asker.html('<p>Name: <a target="_blank" href=http://stackoverflow.com/users/' + item.user.user_id + ' >' +
+    item.user.display_name +
     '</a>' +
     '</p>' +
-    '<p>Reputation: ' + question.owner.reputation + '</p>'
+    '<p>Reputation: ' + item.user.reputation + '</p>' +
+    '<p>Points:' + item.score
   );
-
+  
   return result;
 };
 
@@ -140,7 +126,7 @@ var getTopAnswers = function(tags) {
   };
 
   var result = $.ajax({
-      url: "http://api.stackexchange.com/2.2/tags/{tag}/top-answerers/all_time",
+      url: "http://api.stackexchange.com/2.2/tags/"+ tags + "/top-answerers/all_time",
       data: request,
       dataType: 'jsonp',
       type: "GET",
@@ -154,7 +140,7 @@ var getTopAnswers = function(tags) {
 
       $.each(result.items, function(i, item) {
         console.log(item);
-        var question = showQuestion(item);
+        var question = showTopPosts(item);
         $('.results').append(question);
       });
     })
